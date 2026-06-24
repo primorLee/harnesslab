@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "harnesslab"
+version = "0.1.0"
+description = "A self-evolving, model-agnostic agent harness: long-term memory, experience replay, and (soon) multi-agent self-verification + evaluation."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Wenzhen Li" }]
+keywords = ["agent", "harness", "llm", "memory", "self-evolving", "experience-replay"]
+dependencies = []  # core is stdlib-only by design
+
+[project.optional-dependencies]
+dev = ["pytest>=7"]
+
+[tool.setuptools.packages.find]
+include = ["harnesslab*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

@@ -1,0 +1,28 @@
+# Secrets & infra -- the "never ships" categories. Belt-and-suspenders with leakscan.sh.
+.env
+.env.*
+*.key
+*.pem
+id_rsa*
+id_ed25519*
+*_token*
+*secret*
+*.htpasswd
+.netrc
+
+# Private working area: anything here is git-ignored by design.
+private/
+
+# Raw test/customer data never belongs in the public repo.
+data/
+*.psf
+*.raw
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+*.egg-info/
+build/
+dist/
+.venv/
