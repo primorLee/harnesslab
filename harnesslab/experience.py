@@ -90,12 +90,15 @@ class ExperienceStore:
 
     def __init__(
         self,
-        path,
+        path=None,
         similarity: Similarity = token_overlap,
         distiller: Optional[Distiller] = None,
     ) -> None:
-        self.path = Path(path)
-        self.path.parent.mkdir(parents=True, exist_ok=True)
+        # path=None keeps episodes in memory (handy for tests, evals, and ephemeral runs).
+        self.path = Path(path) if path is not None else None
+        if self.path is not None:
+            self.path.parent.mkdir(parents=True, exist_ok=True)
+        self._mem: list = []
         self.similarity = similarity
         self.distiller = distiller or _heuristic_distiller
 
@@ -107,11 +110,16 @@ class ExperienceStore:
             episode.id = f"{int(episode.ts * 1000):x}-{abs(hash(episode.task)) & 0xFFFF:04x}"
         if not episode.success and not episode.lesson:
             episode.lesson = self.distiller(episode)
-        with self.path.open("a", encoding="utf-8") as fh:
-            fh.write(episode.to_json() + "\n")
+        if self.path is None:
+            self._mem.append(episode)
+        else:
+            with self.path.open("a", encoding="utf-8") as fh:
+                fh.write(episode.to_json() + "\n")
         return episode
 
     def all(self) -> list:
+        if self.path is None:
+            return list(self._mem)
         if not self.path.exists():
             return []
         return [
