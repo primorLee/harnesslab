@@ -18,7 +18,7 @@ whose experience layer warm-started a CMA-ES / GP optimizer across a **154-netli
 benchmark** and a **60+ paper reproduction suite**. No product, customer, or
 infrastructure code is included — only the general method.
 
-Core is **stdlib-only**. 32 tests, every component swappable behind a plain callable.
+Core is **stdlib-only**. 47 tests, every component swappable behind a plain callable.
 
 ---
 
@@ -50,14 +50,18 @@ The gap between a model's raw capability and an agent's real-world performance i
 agent improves at a **task family** with zero model retraining. Failures are nudged up
 the retrieval ranking on purpose — they carry the actionable lessons.
 
-## What's here (v0.2)
+## What's here (v0.3)
 
 | Module | What it does | Maps to (agent-harness topic) |
 |---|---|---|
 | `experience` | Self-evolving episode store: record → distill-on-failure → retrieve warm-start seeds; `solve_with_experience()` runs the loop. | self-evolving agent, experience replay |
 | `memory` | File-based long-term memory with **anti-staleness** recall — drops advice whose referenced artifacts no longer resolve (pluggable validator). | long-term memory |
+| `context` | Token-budget-aware context assembly: pinned anchors always survive, overflow is compacted not dropped; `reground()` re-injects the goal each phase. | context management, long-horizon |
 | `orchestration` | `fan_out` / `pipeline` / `judge_panel` — concurrent subagents, order-preserving, per-item failure isolation. | subagent / multi-agent |
 | `review` | Adversarial self-verification: N-skeptic `refute_vote` and a `writer → critic → judge` loop. | reliability, self-verification |
+| `bias` | Divergence tools: `diverse_sample` (no two candidates too alike) and `lenses` (one per framing) — defeat premature convergence. | research taste, exploration |
+| `flows` | Staged flows with mandatory **gates**, plus a `scored_review` gate (ship only when the weakest dimension clears the bar). | planning, reliability |
+| `recover` | `with_recovery`: retry with diagnosis, escalate only after N *informed* failures. | self-healing, robustness |
 | `skills` | Skill router + a recipe library (persist a *working procedure*, replay it on similar tasks). | skills, planning |
 | `gateway` | One door for every tool/sim call; **records each call**, distills failures into experience. | tool use, observability |
 | `optimize` | Self-adapting (1+λ) evolution strategy (Rechenberg 1/5 rule) — a closed-loop optimizer driving an agent against any evaluator. | closed-loop search |
@@ -114,7 +118,7 @@ python bench/ablation.py --rounds 3        # deterministic; seed with --seed
 
 ```bash
 python examples/quickstart.py     # no network, no keys
-pytest -q                         # 32 tests
+pytest -q                         # 47 tests
 ```
 
 ```python
@@ -151,6 +155,7 @@ gw.call("simulate", netlist=...)
 - [x] Multi-agent orchestration + adversarial self-verification
 - [x] Unified recorded tool/sim gateway + closed-loop optimizer
 - [x] Reproducible evaluation harness with an ablation
+- [x] Long-context management, divergence/anti-bias, flow gates, self-healing recovery
 - [ ] Real-LLM ablation numbers (the harness already runs it; needs an endpoint + key)
 - [ ] Embedding-backed similarity + LLM-backed distiller as drop-in adapters
 - [ ] A `cma` / GP surrogate backend behind `optimize()`
