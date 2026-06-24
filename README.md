@@ -87,6 +87,10 @@ API key). The agent is a *transparent simulated solver* (behaviour stated in
 [`evaluation.py`](harnesslab/evaluation.py)); the **same harness** drives a real LLM via
 the wiring in [`bench/ablation.py`](bench/ablation.py).
 
+![experience-layer ablation: first-try solve rate and total evaluations, ON vs OFF](assets/ablation.png)
+
+*Reproduce the figure: `python bench/plot_ablation.py`*
+
 Setup: 6 families × 4 variants = 24 tasks; variants in a family share one hidden "trick".
 **OFF** gives each task its own store (solve it cold); **ON** shares one store across the
 suite, so a lesson learned on one variant transfers to its siblings. Same RNG seed both
