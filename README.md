@@ -1,5 +1,7 @@
 # harnesslab
 
+[![CI](https://github.com/primorLee/harnesslab/actions/workflows/ci.yml/badge.svg)](https://github.com/primorLee/harnesslab/actions/workflows/ci.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE) ![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)
+
 **A self-evolving, model-agnostic agent harness.**
 
 > **English** · [中文](README.zh-CN.md)
@@ -20,7 +22,7 @@ whose experience layer warm-started a CMA-ES / GP optimizer across a **154-netli
 benchmark** and a **60+ paper reproduction suite**. No product, customer, or
 infrastructure code is included — only the general method.
 
-Core is **stdlib-only**. 47 tests, every component swappable behind a plain callable.
+Core is **stdlib-only**. 52 tests, every component swappable behind a plain callable.
 
 ---
 
@@ -52,10 +54,11 @@ The gap between a model's raw capability and an agent's real-world performance i
 agent improves at a **task family** with zero model retraining. Failures are nudged up
 the retrieval ranking on purpose — they carry the actionable lessons.
 
-## What's here (v0.3)
+## What's here (v0.4)
 
 | Module | What it does | Maps to (agent-harness topic) |
 |---|---|---|
+| `agent` | **The agent loop** — a model-agnostic tool-use loop that composes everything below: warm-starts from experience, recalls memory, calls tools via the gateway, verifies, records the episode. | agent loop, tool use |
 | `experience` | Self-evolving episode store: record → distill-on-failure → retrieve warm-start seeds; `solve_with_experience()` runs the loop. | self-evolving agent, experience replay |
 | `memory` | File-based long-term memory with **anti-staleness** recall — drops advice whose referenced artifacts no longer resolve (pluggable validator). | long-term memory |
 | `context` | Token-budget-aware context assembly: pinned anchors always survive, overflow is compacted not dropped; `reground()` re-injects the goal each phase. | context management, long-horizon |
@@ -123,8 +126,22 @@ python bench/ablation.py --rounds 3        # deterministic; seed with --seed
 ## Quickstart
 
 ```bash
-python examples/quickstart.py     # no network, no keys
-pytest -q                         # 47 tests
+python examples/quickstart.py     # the self-evolving loop, no network/keys
+python examples/tool_agent.py     # a complete tool-using agent, end-to-end
+pytest -q                         # 52 tests
+```
+
+A complete agent, composed from the harness:
+
+```python
+from harnesslab import Agent, ExperienceStore, Gateway
+
+gw = Gateway()                                    # the agent's tools
+gw.register("add", lambda a, b: a + b)
+
+agent = Agent(my_llm, gateway=gw, experience=ExperienceStore("runs.jsonl"))
+result = agent.run("compute 2 + 3")               # think -> act -> observe, recorded
+print(result.answer, [s.action for s in result.steps])
 ```
 
 ```python

@@ -3,6 +3,7 @@
 Model + Harness = Agent. This package is the *harness* half: the scaffolding that lives
 outside the model and turns it into an agent that learns from its own runs.
 """
+from .agent import Agent, AgentResult
 from .bias import diverse_sample, lenses
 from .context import Block, assemble, estimate_tokens, reground, window
 from .evaluation import Task, make_suite, run_ablation
@@ -21,9 +22,12 @@ from .recover import EscalationError, with_recovery
 from .review import refute_vote, writer_critic_judge
 from .skills import Recipe, RecipeBook, Skill, SkillRegistry
 
-__version__ = "0.3.0"
+__version__ = "0.4.0"
 
 __all__ = [
+    # the agent loop (composes everything below)
+    "Agent",
+    "AgentResult",
     # experience + memory
     "Episode",
     "ExperienceStore",

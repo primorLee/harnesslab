@@ -1,5 +1,7 @@
 # harnesslab
 
+[![CI](https://github.com/primorLee/harnesslab/actions/workflows/ci.yml/badge.svg)](https://github.com/primorLee/harnesslab/actions/workflows/ci.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE) ![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)
+
 **一个自进化（self-evolving）、与模型无关（model-agnostic）的 agent harness（智能体执行框架）。**
 
 > [English](README.md) · **中文**
@@ -10,7 +12,7 @@
 
 它是从一个生产级模拟 IC（集成电路）设计 agent 里 *clean-room（净室重写）、领域中立* 地提炼出来的——那个系统的经验层曾为一个 CMA-ES / GP 优化器在 **154 个网表的基准**和 **60+ 篇论文复现**上做热启动（warm-start）。**不含任何产品、客户或基础设施代码**——只有通用方法。
 
-核心**仅依赖标准库**。47 个测试，每个组件都能藏在一个普通可调用对象（callable）背后替换。
+核心**仅依赖标准库**。52 个测试，每个组件都能藏在一个普通可调用对象（callable）背后替换。
 
 ---
 
@@ -36,10 +38,11 @@
 
 `记录 → 失败时蒸馏 → 取回` 就是 harness *自进化* 的含义：agent 在一个**任务族**上越做越好，且**零模型重训**。失败被刻意往取回排序里上调——它们携带着可操作的教训。
 
-## 都有什么（v0.3）
+## 都有什么（v0.4）
 
 | 模块 | 做什么 | 对应议题 |
 |---|---|---|
+| `agent` | **agent 循环（agent loop）** —— 模型无关的工具调用循环，把下面所有东西组合起来：从经验层热启动、召回记忆、经网关调工具、自我验证、记录本轮。 | agent loop、工具调用 |
 | `experience` | 自进化经验库：记录 → 失败蒸馏 → 取回热启动种子；`solve_with_experience()` 跑这个闭环。 | 自进化 agent、经验回放 |
 | `memory` | 文件级长期记忆，带**反陈旧**召回——丢弃所引用工件已失效的建议（validator 可插拔）。 | 长期记忆（long-term memory） |
 | `context` | 按 token 预算装配上下文：钉住的锚点永远保留，超额的被压缩而非丢弃；`reground()` 每阶段重新注入目标。 | 上下文管理、长程任务 |
@@ -82,8 +85,22 @@
 ## 快速开始
 
 ```bash
-python examples/quickstart.py     # 无网络、无 key
-pytest -q                         # 47 个测试
+python examples/quickstart.py     # 自进化闭环，无网络/无 key
+python examples/tool_agent.py     # 一个完整的工具调用 agent，端到端
+pytest -q                         # 52 个测试
+```
+
+一个完整的 agent，由这套 harness 组合而成：
+
+```python
+from harnesslab import Agent, ExperienceStore, Gateway
+
+gw = Gateway()                                    # agent 的工具
+gw.register("add", lambda a, b: a + b)
+
+agent = Agent(my_llm, gateway=gw, experience=ExperienceStore("runs.jsonl"))
+result = agent.run("compute 2 + 3")               # 思考 → 行动 → 观察，全程记录
+print(result.answer, [s.action for s in result.steps])
 ```
 
 ```python
