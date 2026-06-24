@@ -2,6 +2,8 @@
 
 **A self-evolving, model-agnostic agent harness.**
 
+> **English** · [中文](README.zh-CN.md)
+
 > *Model + Harness = Agent.* This is the **harness** half — the scaffolding that lives
 > *outside* the model and turns a capable LLM into an agent that **learns from its own
 > runs** instead of repeating its own mistakes.
