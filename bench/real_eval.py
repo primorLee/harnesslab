@@ -43,12 +43,12 @@ def calculator() -> Gateway:
 
 def run(mode: str, llm) -> dict:
     gw = calculator()
-    shared = ExperienceStore() if mode == "on" else None
     solved = calls = total = 0
     for op, (rule, rule_text) in OPS.items():
+        fam_store = ExperienceStore() if mode == "on" else None  # a rule transfers within its family
         for a, b in VARIANTS:
             total += 1
-            store = shared if mode == "on" else ExperienceStore()
+            store = fam_store if mode == "on" else ExperienceStore()
             answer = rule(a, b)
             task = (
                 f"Compute {op}({a}, {b}) using the add/mul tools. If the lessons above "
