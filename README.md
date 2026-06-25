@@ -90,7 +90,7 @@ Does the experience layer actually help? A harness claim is only worth a measure
 before/after, so here is one — a **controlled, reproducible ablation** (deterministic, no
 API key). The agent is a *transparent simulated solver* (behaviour stated in
 [`evaluation.py`](harnesslab/evaluation.py)); the **same harness** drives a real LLM via
-the wiring in [`bench/ablation.py`](bench/ablation.py).
+[`bench/real_eval.py`](bench/real_eval.py) — a real-LLM ablation, DeepSeek out of the box.
 
 ![experience-layer ablation: first-try solve rate and total evaluations, ON vs OFF](assets/ablation.png)
 

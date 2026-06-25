@@ -60,7 +60,7 @@
 
 ## 评测（Evaluation）
 
-经验层到底有没有用？一个 harness 的主张，只有配上量出来的前后对照才值钱——所以这里就有一个：一个**受控、可复现的消融**（确定性，无需 API key）。这里的 agent 是一个*透明的模拟求解器*（行为模型写在 [`evaluation.py`](harnesslab/evaluation.py) 里）；**同一套 harness** 也能经由 [`bench/ablation.py`](bench/ablation.py) 的接线去驱动真实 LLM。
+经验层到底有没有用？一个 harness 的主张，只有配上量出来的前后对照才值钱——所以这里就有一个：一个**受控、可复现的消融**（确定性，无需 API key）。这里的 agent 是一个*透明的模拟求解器*（行为模型写在 [`evaluation.py`](harnesslab/evaluation.py) 里）；**同一套 harness** 也能经由 [`bench/real_eval.py`](bench/real_eval.py) 驱动真实 LLM 做消融（DeepSeek 开箱即用）。
 
 ![经验层消融：首次成功率与总评测次数，开 vs 关](assets/ablation.zh.png)
 
